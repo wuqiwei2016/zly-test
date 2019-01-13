@@ -1,0 +1,55 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.2//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zpkj.exam.dao.CarouselInfoDao">
+
+    <!-- 查询 CarouselInfo -->
+    <select id="find" parameterType="com.zpkj.exam.domain.query.CarouselInfoQuery"
+            resultType="com.zpkj.exam.domain.CarouselInfo">
+        SELECT * FROM carousel_info
+        <where>
+            <if test="status != null">
+                AND status = #{status}
+            </if>
+        </where>
+        ORDER BY sort_order,create_time DESC
+    </select>
+
+    <!-- 通过id得到一个 CarouselInfo-->
+    <select id="get" parameterType="string" resultType="com.zpkj.exam.domain.CarouselInfo">
+        SELECT * FROM carousel_info WHERE id = #{id}
+    </select>
+
+    <!-- 新增 CarouselInfo -->
+    <insert id="add" parameterType="com.zpkj.exam.domain.form.CarouselInfoForm">
+        INSERT INTO carousel_info (
+            id, img_path, title, link, sort_order, create_time, create_username, update_time, update_username, status
+        )
+        VALUES(
+            #{id}, #{imgPath}, #{title}, #{link}, #{sortOrder}, #{createTime}, #{createUsername}, #{updateTime}, #{updateUsername}, #{status}
+        )
+    </insert>
+
+    <!-- 修改 CarouselInfo -->
+    <update id="update" parameterType="com.zpkj.exam.domain.form.CarouselInfoForm">
+        UPDATE carousel_info SET
+            img_path = #{imgPath},
+            title = #{title},
+            link = #{link},
+            update_time = #{updateTime},
+            update_username = #{updateUsername},
+            status = #{status}
+        WHERE id = #{id}
+    </update>
+
+    <!-- 删除一个 CarouselInfo -->
+    <delete id="delete" parameterType="string">
+        DELETE FROM carousel_info WHERE id = #{id}
+    </delete>
+
+    <!-- 修改状态-->
+    <update id="changeStatus">
+        UPDATE carousel_info SET status=#{status} WHERE id = #{id}
+    </update>
+
+</mapper>

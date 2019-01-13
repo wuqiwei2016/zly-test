@@ -1,0 +1,78 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.2//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zpkj.exam.dao.ArticleInfoDao">
+
+    <!-- 查询 ArticleInfo -->
+    <select id="find" parameterType="com.zpkj.exam.domain.query.ArticleInfoQuery"
+            resultType="com.zpkj.exam.domain.ArticleInfo">
+        SELECT t.*,att.attach_name FROM article_info t
+        LEFT JOIN attachment_info att ON att.id = t.attachment
+        <where>
+            <if test='articleType != null and articleType != "" and articleType != "5"'>
+                AND t.article_type = #{articleType}
+            </if>
+            <if test='articleType != null and articleType != "" and articleType == "5"'>
+                AND (t.article_type = '2' OR t.article_type = '4')
+            </if>
+            <if test="search != null and search != ''">
+                AND (t.title LIKE CONCAT('%',#{search},'%'))
+            </if>
+        </where>
+        ORDER BY t.create_time DESC
+    </select>
+
+    <!-- 通过id得到一个 ArticleInfo-->
+    <select id="get" parameterType="string" resultType="com.zpkj.exam.domain.ArticleInfo">
+        SELECT t.*,att.attach_name FROM article_info t
+        LEFT JOIN attachment_info att ON att.id = t.attachment
+        WHERE t.id = #{id}
+    </select>
+
+    <!-- 新增 ArticleInfo -->
+    <insert id="add" parameterType="com.zpkj.exam.domain.form.ArticleInfoForm">
+        INSERT INTO article_info (
+            id, owner_id, title, author, source, content, sort_order, content_type, article_type, release_time, attachment, cover_img, ext_link, is_recommended, is_top, create_time, create_username, update_time, update_username, status
+        )
+        VALUES(
+            #{id}, #{ownerId}, #{title}, #{author}, #{source}, #{content}, #{sortOrder}, #{contentType}, #{articleType}, #{releaseTime}, #{attachment}, #{coverImg}, #{extLink}, #{isRecommended}, #{isTop}, #{createTime}, #{createUsername}, #{updateTime}, #{updateUsername}, #{status}
+        )
+    </insert>
+
+    <!-- 修改 ArticleInfo -->
+    <update id="update" parameterType="com.zpkj.exam.domain.form.ArticleInfoForm">
+        UPDATE article_info SET
+            title = #{title},
+            author = #{author},
+            source = #{source},
+            content = #{content},
+            sort_order = #{sortOrder},
+            content_type = #{contentType},
+            article_type = #{articleType},
+            release_time = #{releaseTime},
+            attachment = #{attachment},
+            cover_img = #{coverImg},
+            ext_link = #{extLink},
+            is_recommended = #{isRecommended},
+            is_top = #{isTop},
+            update_time = #{updateTime},
+            update_username = #{updateUsername}
+        WHERE id = #{id}
+    </update>
+
+    <!-- 删除一个 ArticleInfo -->
+    <delete id="delete" parameterType="string">
+        DELETE FROM article_info WHERE id = #{id}
+    </delete>
+
+    <!-- 修改状态-->
+    <update id="changeStatus">
+        UPDATE article_info SET status=#{status} WHERE id = #{id}
+    </update>
+
+    <!-- 通过id得到一个 ArticleInfo-->
+    <select id="getByOwnerId" parameterType="string" resultType="com.zpkj.exam.domain.ArticleInfo">
+        SELECT t.* FROM article_info t
+        WHERE t.owner_id = #{ownerId}
+    </select>
+</mapper>

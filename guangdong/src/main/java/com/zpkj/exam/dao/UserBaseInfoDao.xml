@@ -1,0 +1,141 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.2//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zpkj.exam.dao.UserBaseInfoDao">
+
+    <!-- 查询 UserBaseInfo -->
+    <select id="find" parameterType="com.zpkj.exam.domain.query.UserBaseInfoQuery"
+            resultType="com.zpkj.exam.domain.UserBaseInfo">
+        SELECT t.*,ta1.AREA_NAME AS province_name, ta2.AREA_NAME AS city_name, ta3.AREA_NAME AS area_name,
+        login.account,login.pwd,login.head_img,p.permission,p.user_type,login.status AS edit_status
+        FROM user_base_info t
+        LEFT JOIN user_login_info login ON login.user_id = t.id
+        LEFT JOIN permission_info p ON p.user_id = t.id
+        LEFT JOIN traffic_area ta1 ON ta1.area_no = t.province
+        LEFT JOIN traffic_area ta2 ON ta2.area_no = t.city
+        LEFT JOIN traffic_area ta3 ON ta3.area_no = t.area
+        <where>
+            <if test="realName != null and realName != ''">
+                AND t.real_name = #{realName}
+            </if>
+            <if test="idCard != null and idCard != ''">
+                AND t.id_card = #{idCard}
+            </if>
+            <if test="userType != null and userType != ''">
+                AND p.user_type = #{userType}
+            </if>
+            <if test="peopleType1 != null and peopleType1 != ''">
+                AND t.people_type1 = #{peopleType1}
+            </if>
+            <if test="peopleType2 != null and peopleType2 != ''">
+                AND t.people_type2 = #{peopleType2}
+            </if>
+            <if test="peopleType3 != null and peopleType3 != ''">
+                AND t.people_type3 = #{peopleType3}
+            </if>
+            <if test="search != null and search != ''">
+                AND (t.real_name LIKE CONCAT('%',#{search},'%')
+                OR t.id_card LIKE CONCAT('%',#{search},'%')
+                OR t.phone LIKE CONCAT('%',#{search},'%')
+                OR t.work_unit LIKE CONCAT('%',#{search},'%'))
+            </if>
+        </where>
+        ORDER BY t.create_time DESC
+    </select>
+    <!--<select id="find" parameterType="com.zpkj.exam.domain.query.UserBaseInfoQuery"
+            resultType="com.zpkj.exam.domain.UserBaseInfo">
+        SELECT t.*,ta1.AREA_NAME AS province_name, ta2.AREA_NAME AS city_name, ta3.AREA_NAME AS area_name,
+        ep.start_time,ep.end_time,login.account,login.pwd,login.head_img,p.permission,p.user_type,ea.apply_time FROM
+        user_base_info t
+        LEFT JOIN exam_apply_info ea ON ea.user_id = t.id AND ea.status = 1
+        LEFT JOIN exam_info e ON e.user_id = t.id AND e.status = 1
+        LEFT JOIN exam_period_info ep ON ep.id = e.exam_period_id
+        LEFT JOIN user_login_info login ON login.user_id = t.id
+        LEFT JOIN permission_info p ON p.user_id = t.id
+        LEFT JOIN traffic_area ta1 ON ta1.area_no = t.province
+        LEFT JOIN traffic_area ta2 ON ta2.area_no = t.city
+        LEFT JOIN traffic_area ta3 ON ta3.area_no = t.area
+        <where>
+            <if test="realName != null and realName != ''">
+                AND t.real_name = #{realName}
+            </if>
+            <if test="idCard != null and idCard != ''">
+                AND t.id_card = #{idCard}
+            </if>
+            <if test="isApply != null and isApply == 1">
+                AND ea.id IS NOT NULL
+            </if>
+            <if test="userType != null and userType != ''">
+                AND p.user_type = #{userType}
+            </if>
+            <if test="search != null and search != ''">
+                AND (t.real_name LIKE CONCAT('%',#{search},'%')
+                OR t.id_card LIKE CONCAT('%',#{search},'%')
+                OR t.phone LIKE CONCAT('%',#{search},'%')
+                OR t.work_unit LIKE CONCAT('%',#{search},'%'))
+            </if>
+        </where>
+        ORDER BY t.create_time DESC
+    </select>-->
+
+    <!-- 通过id得到一个 UserBaseInfo-->
+    <select id="get" parameterType="string" resultType="com.zpkj.exam.domain.UserBaseInfo">
+        SELECT t.*,ta1.AREA_NAME AS province_name, ta2.AREA_NAME AS city_name, ta3.AREA_NAME AS area_name,
+        login.account,login.pwd,login.head_img,login.annex_url,login.people_type,p.permission,p.user_type,login.status AS edit_status
+        FROM user_base_info t
+        LEFT JOIN user_login_info login ON login.user_id = t.id
+        LEFT JOIN permission_info p ON p.user_id = t.id
+        LEFT JOIN traffic_area ta1 ON ta1.AREA_NO = t.province
+        LEFT JOIN traffic_area ta2 ON ta2.AREA_NO = t.city
+        LEFT JOIN traffic_area ta3 ON ta3.AREA_NO = t.area
+        WHERE t.id = #{id}
+    </select>
+
+    <!-- 新增 UserBaseInfo -->
+    <insert id="add" parameterType="com.zpkj.exam.domain.form.UserBaseInfoForm">
+        INSERT INTO user_base_info (
+            id, people_type1, people_type2, people_type3, real_name, id_card, sex, birthday, phone, email, province, city, area, address, education, work_unit, post_code, fixed_telephone, position, work_number, create_time, create_username, update_time, update_username, status
+        )
+        VALUES(
+            #{id}, #{peopleType1}, #{peopleType2}, #{peopleType3}, #{realName}, #{idCard}, #{sex}, #{birthday}, #{phone}, #{email}, #{province}, #{city}, #{area}, #{address}, #{education}, #{workUnit}, #{postCode}, #{fixedTelephone}, #{position}, #{workNumber}, #{createTime}, #{createUsername}, #{updateTime}, #{updateUsername}, #{status}
+        )
+    </insert>
+
+    <!-- 修改 UserBaseInfo -->
+    <update id="update" parameterType="com.zpkj.exam.domain.form.UserBaseInfoForm">
+        UPDATE user_base_info SET
+            real_name = #{realName},
+            id_card = #{idCard},
+            sex = #{sex},
+            birthday = #{birthday},
+            phone = #{phone},
+            email = #{email},
+            province = #{province},
+            city = #{city},
+            area = #{area},
+            address = #{address},
+            education = #{education},
+            work_unit = #{workUnit},
+            post_code = #{postCode},
+            fixed_telephone = #{fixedTelephone},
+            position = #{position},
+            work_number = #{workNumber},
+            people_type1 = #{peopleType1},
+            people_type2 = #{peopleType2},
+            people_type3 = #{peopleType3},
+            update_time = #{updateTime},
+            update_username = #{updateUsername}
+        WHERE id = #{id}
+    </update>
+
+    <!-- 删除一个 UserBaseInfo -->
+    <delete id="delete" parameterType="string">
+        DELETE FROM user_base_info WHERE id = #{id}
+    </delete>
+
+    <!-- 修改状态-->
+    <update id="changeStatus">
+        UPDATE user_base_info SET status=#{status} WHERE id = #{id}
+    </update>
+
+</mapper>

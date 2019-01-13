@@ -1,0 +1,91 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.2//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zpkj.exam.dao.ExamPeriodInfoDao">
+
+    <!-- 查询 ExamPeriodInfo -->
+    <select id="find" parameterType="com.zpkj.exam.domain.query.ExamPeriodInfoQuery"
+            resultType="com.zpkj.exam.domain.ExamPeriodInfo">
+        SELECT t.*,ta1.AREA_NAME AS province_name, ta2.AREA_NAME AS city_name, ta3.AREA_NAME AS area_name,
+        (SELECT COUNT(1) FROM exam_info e1 WHERE e1.exam_period_id = t.id) AS total_num,
+        (SELECT COUNT(1) FROM exam_info e2 WHERE e2.exam_period_id = t.id AND e2.result = 1) AS pass_num,
+        (SELECT COUNT(1) FROM exam_info e3 WHERE e3.exam_period_id = t.id AND e3.result IS NULL) AS null_num
+        FROM exam_period_info t
+        LEFT JOIN traffic_area ta1 ON ta1.area_no = t.province
+        LEFT JOIN traffic_area ta2 ON ta2.area_no = t.city
+        LEFT JOIN traffic_area ta3 ON ta3.area_no = t.area
+        <where>
+            <if test="startTime != null">
+                AND start_time &gt; #{startTime}
+            </if>
+            <if test="endTime != null">
+                AND end_time &lt; #{endTime}
+            </if>
+            <if test="search != null and search != ''">
+                AND (t.period LIKE CONCAT('%',#{search},'%')
+                OR t.title LIKE CONCAT('%',#{search},'%')
+                OR t.address LIKE CONCAT('%',#{search},'%'))
+            </if>
+            <if test="examStatus != null and examStatus == 1">
+                AND start_time &gt; #{createTime}
+            </if>
+            <if test="examStatus != null and examStatus == 2">
+                AND start_time &lt; #{createTime} AND end_time &gt; #{createTime}
+            </if>
+            <if test="examStatus != null and examStatus == 3">
+                AND end_time &lt; #{createTime}
+            </if>
+        </where>
+        ORDER BY create_time DESC
+    </select>
+
+    <!-- 通过id得到一个 ExamPeriodInfo-->
+    <select id="get" parameterType="string" resultType="com.zpkj.exam.domain.ExamPeriodInfo">
+         SELECT t.*,ta1.AREA_NAME AS province_name, ta2.AREA_NAME AS city_name, ta3.AREA_NAME AS area_name,
+        (SELECT COUNT(1) FROM exam_info e1 WHERE e1.exam_period_id = t.id) AS total_num,
+        (SELECT COUNT(1) FROM exam_info e2 WHERE e2.exam_period_id = t.id AND e2.result = 1) AS pass_num,
+        (SELECT COUNT(1) FROM exam_info e3 WHERE e3.exam_period_id = t.id AND e3.result IS NULL) AS null_num
+        FROM exam_period_info t
+        LEFT JOIN traffic_area ta1 ON ta1.area_no = t.province
+        LEFT JOIN traffic_area ta2 ON ta2.area_no = t.city
+        LEFT JOIN traffic_area ta3 ON ta3.area_no = t.area
+        WHERE t.id = #{id}
+    </select>
+
+    <!-- 新增 ExamPeriodInfo -->
+    <insert id="add" parameterType="com.zpkj.exam.domain.form.ExamPeriodInfoForm">
+        INSERT INTO exam_period_info (
+            id, period, title, start_time, end_time, province, city, area, address, create_time, create_username, update_time, update_username, status
+        )
+        VALUES(
+            #{id}, #{period}, #{title}, #{startTime}, #{endTime}, #{province}, #{city}, #{area}, #{address}, #{createTime}, #{createUsername}, #{updateTime}, #{updateUsername}, #{status}
+        )
+    </insert>
+
+    <!-- 修改 ExamPeriodInfo -->
+    <update id="update" parameterType="com.zpkj.exam.domain.form.ExamPeriodInfoForm">
+        UPDATE exam_period_info SET
+            period = #{period},
+            title = #{title},
+            start_time = #{startTime},
+            end_time = #{endTime},
+            province = #{province},
+            city = #{city},
+            area = #{area},
+            address = #{address},
+            update_time = #{updateTime},
+            update_username = #{updateUsername}
+        WHERE id = #{id}
+    </update>
+
+    <!-- 删除一个 ExamPeriodInfo -->
+    <delete id="delete" parameterType="string">
+        DELETE FROM exam_period_info WHERE id = #{id}
+    </delete>
+
+    <!-- 修改状态-->
+    <update id="changeStatus">
+        UPDATE exam_period_info SET status=#{status} WHERE id = #{id}
+    </update>
+
+</mapper>

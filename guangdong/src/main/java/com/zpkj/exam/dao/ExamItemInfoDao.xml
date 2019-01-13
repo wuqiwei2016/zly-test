@@ -1,0 +1,72 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.2//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zpkj.exam.dao.ExamItemInfoDao">
+
+    <!-- 查询 ExamItemInfo -->
+    <select id="find" parameterType="com.zpkj.exam.domain.query.ExamItemInfoQuery"
+            resultType="com.zpkj.exam.domain.ExamItemInfo">
+        SELECT * FROM exam_item_info
+        <where>
+            <if test="examId != null and examId != ''">
+                AND exam_id = #{examId}
+            </if>
+            <if test='userAnswer != null and userAnswer == "1"'>
+                AND user_answer IS NOT NULL
+            </if>
+            <if test='userAnswer != null and userAnswer == "2"'>
+                AND user_answer IS NULL
+            </if>
+        </where>
+        ORDER BY order_num,create_time DESC
+    </select>
+
+    <!-- 通过id得到一个 ExamItemInfo-->
+    <select id="get" parameterType="string" resultType="com.zpkj.exam.domain.ExamItemInfo">
+        SELECT * FROM exam_item_info WHERE id = #{id}
+    </select>
+
+    <!-- 新增 ExamItemInfo -->
+    <insert id="add" parameterType="com.zpkj.exam.domain.form.ExamItemInfoForm">
+        INSERT INTO exam_item_info (
+            id, exam_id, question_id, order_num, user_answer, result, title, question_type, type, answer_a, answer_b, answer_c, answer_d, right_answer, answer_description, difficulty, create_time, create_username, update_time, update_username, status
+        )
+        VALUES(
+            #{id}, #{examId}, #{questionId}, #{orderNum}, #{userAnswer}, #{result}, #{title}, #{questionType}, #{type}, #{answerA}, #{answerB}, #{answerC}, #{answerD}, #{rightAnswer}, #{answerDescription}, #{difficulty}, #{createTime}, #{createUsername}, #{updateTime}, #{updateUsername}, #{status}
+        )
+    </insert>
+
+    <!-- 修改 ExamItemInfo -->
+    <update id="update" parameterType="com.zpkj.exam.domain.form.ExamItemInfoForm">
+        UPDATE exam_item_info SET
+        <if test="userAnswer != null">
+            user_answer = #{userAnswer},
+        </if>
+        <if test="result != null">
+            result = #{result},
+        </if>
+        update_time = #{updateTime},
+        update_username = #{updateUsername}
+        WHERE id = #{id}
+    </update>
+
+    <!-- 删除一个 ExamItemInfo -->
+    <delete id="delete" parameterType="string">
+        DELETE FROM exam_item_info WHERE id = #{id}
+    </delete>
+
+    <!-- 修改状态-->
+    <update id="changeStatus">
+        UPDATE exam_item_info SET status=#{status} WHERE id = #{id}
+    </update>
+
+    <!-- 修改答案-->
+    <update id="changeAnswer">
+        UPDATE exam_item_info SET user_answer=#{answer} WHERE id = #{id}
+    </update>
+
+    <!-- 通过examId,orderNum得到一个 ExamItemInfo-->
+    <select id="getByExamIdAndOrderNum" resultType="com.zpkj.exam.domain.ExamItemInfo">
+        SELECT * FROM exam_item_info WHERE exam_id = #{examId} AND order_num = #{orderNum}
+    </select>
+</mapper>

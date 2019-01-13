@@ -1,0 +1,88 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.2//EN"
+		"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zpkj.exam.dao.IncomeInfoDao">
+
+	<!-- 查询 IncomeInfo -->
+	<select id="find" parameterType="com.zpkj.exam.domain.query.IncomeInfoQuery"
+			resultType="com.zpkj.exam.domain.IncomeInfo">
+		SELECT info.*,ub.real_name realName,ub.id_card idCard,ub.phone phone,ub.people_type1,ub.people_type2
+		FROM income_info info
+		LEFT JOIN user_base_info ub ON info.user_base_id = ub.id
+		<where>
+			<if test="search != null and search != ''">
+				AND ( ub.real_name like CONCAT('%',#{search},'%') OR ub.id_card like CONCAT('%',#{search},'%')
+				OR  ub.phone like CONCAT('%',#{search},'%') OR  ub.people_type1 like CONCAT('%',#{search},'%')
+				OR  ub.people_type2 like CONCAT('%',#{search},'%'))
+			</if>
+			<if test="userBaseId != null and userBaseId!=''">
+				AND info.user_base_id = #{userBaseId}
+			</if>
+			<if test="status != null and status!=''">
+				AND info.status = #{status}
+			</if>
+		</where>
+		ORDER BY info.create_time DESC
+	</select>
+
+	<!-- 通过id得到一个 IncomeInfo-->
+	<select id="get" parameterType="string" resultType="com.zpkj.exam.domain.IncomeInfo">
+		SELECT info.* ,ub.real_name realName,ub.id_card idCard,ub.phone phone,ub.people_type1,ub.people_type2
+		FROM income_info info
+		LEFT JOIN user_base_info ub ON info.user_base_id = ub.id
+		WHERE info.id = #{id}
+	</select>
+
+	<!-- 新增 IncomeInfo -->
+	<insert id="add" parameterType="com.zpkj.exam.domain.form.IncomeInfoForm">
+		INSERT INTO income_info (
+		id, title, user_base_id, out_trade_no,trade_no, money_amount, pay_time, status, create_time, update_time, create_username,update_username,remark
+		)
+		VALUES(
+		#{id}, #{title}, #{userBaseId}, #{outTradeNo},#{tradeNo}, #{moneyAmount}, #{payTime}, #{status}, #{createTime}, #{updateTime}, #{createUsername}, #{updateUsername},#{remark}
+		)
+	</insert>
+
+	<!-- 修改 IncomeInfo -->
+	<update id="update" parameterType="com.zpkj.exam.domain.form.IncomeInfoForm">
+		UPDATE income_info SET
+		update_time = #{updateTime}
+		<if test="title != null and title != ''">
+			,title = #{title}
+		</if>
+		<if test="userBaseId != null and userBaseId != ''">
+			,user_base_id = #{userBaseId}
+		</if>
+		<if test="outTradeNo != null and outTradeNo != ''">
+			,out_trade_no = #{outTradeNo}
+		</if>
+		<if test="moneyAmount != null and moneyAmount != ''">
+			,money_amount = #{moneyAmount}
+		</if>
+		<if test="payTime != null ">
+			,pay_time = #{payTime}
+		</if>
+		<if test="status != null and status != ''">
+			,status = #{status}
+		</if>
+		<if test="createUsername != null and createUsername != ''">
+			,create_username = #{createUsername}
+		</if>
+		<if test="updateUsername != null and updateUsername != ''">
+			,update_username = #{updateUsername}
+		</if>
+		<if test="tradeNo != null and tradeNo != ''">
+			,trade_no = #{tradeNo}
+		</if>
+		<if test="remark != null and remark != ''">
+			,remark = #{remark}
+		</if>
+		WHERE id = #{id}
+	</update>
+
+	<!-- 删除一个 IncomeInfo -->
+	<delete id="delete" parameterType="string">
+        DELETE FROM income_info WHERE id = #{id}
+    </delete>
+
+</mapper>

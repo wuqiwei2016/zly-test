@@ -1,0 +1,84 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.2//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zpkj.exam.dao.ExamApplyInfoDao">
+
+    <!-- 查询 ExamApplyInfo -->
+    <select id="find" parameterType="com.zpkj.exam.domain.query.ExamApplyInfoQuery"
+            resultType="com.zpkj.exam.domain.ExamApplyInfo">
+        SELECT t.*,u.real_name, u.id_card, u.phone, u.work_unit,ei.people_type,ei.annex_url,
+        u.create_time AS user_create_time,ep.start_time,ep.end_time FROM exam_apply_info t
+        LEFT JOIN exam_info e ON e.id = t.exam_id
+        LEFT JOIN user_base_info u ON u.id = t.user_id
+        LEFT JOIN exam_period_info ep ON ep.id = e.exam_period_id
+        LEFT JOIN user_login_info ei ON ei.user_id = t.user_id
+        <where>
+            <if test="peopleType !='' and peopleType !=null">
+                AND ei.people_type = #{peopleType}
+            </if>
+            <if test="realName != null and realName != ''">
+                AND u.real_name = #{realName}
+            </if>
+            <if test="idCard != null and idCard != ''">
+                AND u.id_card = #{idCard}
+            </if>
+            <if test="userId != null and userId != ''">
+                AND t.user_id = #{userId}
+            </if>
+            <if test="status != null">
+                AND t.status = #{status}
+            </if>
+            <if test="flag != null and flag == 1">
+                AND (t.exam_id IS NULL OR t.exam_id = '' OR ep.start_time &gt; #{createTime})
+            </if>
+            <if test="flag != null and flag == 2">
+                AND (t.exam_id IS NULL OR t.exam_id = '')
+            </if>
+            <if test="flag != null and flag == 3">
+                AND (ep.start_time &gt; #{createTime})
+            </if>
+            <if test="search != null and search != ''">
+                AND (u.real_name LIKE CONCAT('%',#{search},'%')
+                OR u.id_card LIKE CONCAT('%',#{search},'%')
+                OR u.phone LIKE CONCAT('%',#{search},'%')
+                OR u.work_unit LIKE CONCAT('%',#{search},'%'))
+            </if>
+        </where>
+        ORDER BY t.create_time DESC
+    </select>
+
+    <!-- 通过id得到一个 ExamApplyInfo-->
+    <select id="get" parameterType="string" resultType="com.zpkj.exam.domain.ExamApplyInfo">
+        SELECT * FROM exam_apply_info WHERE id = #{id}
+    </select>
+
+    <!-- 新增 ExamApplyInfo -->
+    <insert id="add" parameterType="com.zpkj.exam.domain.form.ExamApplyInfoForm">
+        INSERT INTO exam_apply_info (
+            id, user_id, apply_time, exam_id, create_time, create_username, update_time, update_username, status
+        )
+        VALUES(
+            #{id}, #{userId}, #{applyTime}, #{examId}, #{createTime}, #{createUsername}, #{updateTime}, #{updateUsername}, #{status}
+        )
+    </insert>
+
+    <!-- 修改 ExamApplyInfo -->
+    <update id="update" parameterType="com.zpkj.exam.domain.form.ExamApplyInfoForm">
+        UPDATE exam_apply_info SET
+            exam_id = #{examId},
+            update_time = #{updateTime},
+            update_username = #{updateUsername}
+        WHERE id = #{id}
+    </update>
+
+    <!-- 删除一个 ExamApplyInfo -->
+    <delete id="delete" parameterType="string">
+        DELETE FROM exam_apply_info WHERE id = #{id}
+    </delete>
+
+    <!-- 修改状态-->
+    <update id="changeStatus">
+        UPDATE exam_apply_info SET status=#{status} WHERE id = #{id}
+    </update>
+
+</mapper>

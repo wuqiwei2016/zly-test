@@ -1,0 +1,42 @@
+server:
+ maxHttpHeaderSize: 10485760
+spring:
+  datasource:
+    driver-class-name: com.mysql.jdbc.Driver
+    url: jdbc:mysql://192.168.1.19:3306/exam_guangdong?useUnicode=true&characterEncoding=utf8&characterSetResults=utf8&useSSL=false
+    username: root
+    password: sjk@2018zpkj
+  redis:
+    host: 192.168.1.3
+    port: 6379
+    password: 123
+    database: 3
+    timeout: 1000
+  http:
+    multipart:
+      maxFileSize: 10Mb
+      maxRequestSize: 10Mb
+  ## json时间格式设置
+  jackson:
+    time-zone: GMT+8
+    date-format: yyyy/MM/dd HH:mm:ss
+mybatis:
+  configuration:
+    mapUnderscoreToCamelCase: true
+
+pagehelper:
+  helper-dialect: mysql
+  reasonable: true
+  support-methods-arguments: true
+  params: count=countSql
+
+uploadPath:
+  win: E://aa/bb
+  linux: /home/yunwei/tomcat-data/guangdong_exam/ROOT/file
+multipart:
+  maxFileSize: 10Mb
+  maxRequestSize: 50Mb
+
+#报名金额
+systemPara:
+  moneyAmount: 0.01

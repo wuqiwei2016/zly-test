@@ -1,0 +1,94 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.2//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zpkj.exam.dao.QuestionJudgeInfoDao">
+
+    <!-- 查询 QuestionJudgeInfo -->
+    <select id="find" parameterType="com.zpkj.exam.domain.query.QuestionJudgeInfoQuery"
+            resultType="com.zpkj.exam.domain.QuestionJudgeInfo">
+        SELECT * FROM question_judge_info
+        <where>
+            <if test="questionType != null and questionType != ''">
+                AND question_type = #{questionType}
+            </if>
+            <if test="peopleType1 != null and peopleType1 != ''">
+                AND people_type1 = #{peopleType1}
+            </if>
+            <if test="peopleType2 != null and peopleType2 != ''">
+                AND people_type2 = #{peopleType2}
+            </if>
+            <if test="peopleType3 != null and peopleType3 != ''">
+                AND people_type3 = #{peopleType3}
+            </if>
+            <if test="search != null and search != ''">
+                AND (title LIKE CONCAT('%',#{search},'%'))
+            </if>
+        </where>
+        ORDER BY create_time DESC
+    </select>
+
+    <!-- 查询 QuestionJudgeInfo -->
+    <select id="findByLimit" parameterType="com.zpkj.exam.domain.query.QuestionJudgeInfoQuery"
+            resultType="com.zpkj.exam.domain.QuestionJudgeInfo">
+        SELECT * FROM question_judge_info
+        WHERE question_type = 2
+        <if test="peopleType1 != null and peopleType1 != ''">
+            AND people_type1 = #{peopleType1}
+        </if>
+        <if test="peopleType2 != null and peopleType2 != ''">
+            AND people_type2 = #{peopleType2}
+        </if>
+        <if test="peopleType3 != null and peopleType3 != ''">
+            AND people_type3 = #{peopleType3}
+        </if>
+        ORDER BY RAND() LIMIT #{limit}
+    </select>
+
+    <!-- 通过id得到一个 QuestionJudgeInfo-->
+    <select id="get" parameterType="string" resultType="com.zpkj.exam.domain.QuestionJudgeInfo">
+        SELECT * FROM question_judge_info WHERE id = #{id}
+    </select>
+
+    <!-- 新增 QuestionJudgeInfo -->
+    <insert id="add" parameterType="com.zpkj.exam.domain.form.QuestionJudgeInfoForm">
+        INSERT INTO question_judge_info (
+            id, people_type1, people_type2, people_type3, title, question_type, right_answer, answer_description, difficulty, create_time, create_username, update_time, update_username, status
+        )
+        VALUES(
+            #{id}, #{peopleType1}, #{peopleType2}, #{peopleType3}, #{title}, #{questionType}, #{rightAnswer}, #{answerDescription}, #{difficulty}, #{createTime}, #{createUsername}, #{updateTime}, #{updateUsername}, #{status}
+        )
+    </insert>
+
+    <!-- 修改 QuestionJudgeInfo -->
+    <update id="update" parameterType="com.zpkj.exam.domain.form.QuestionJudgeInfoForm">
+        UPDATE question_judge_info SET
+            title = #{title}, 
+            question_type = #{questionType}, 
+            right_answer = #{rightAnswer}, 
+            answer_description = #{answerDescription}, 
+            difficulty = #{difficulty},
+            people_type1 = #{peopleType1},
+            people_type2 = #{peopleType2},
+            people_type3 = #{peopleType3},
+            update_time = #{updateTime},
+            update_username = #{updateUsername}
+        WHERE id = #{id}
+    </update>
+
+    <!-- 删除一个 QuestionJudgeInfo -->
+    <delete id="delete" parameterType="string">
+        DELETE FROM question_judge_info WHERE id = #{id}
+    </delete>
+
+    <!-- 修改状态-->
+    <update id="changeStatus">
+        UPDATE question_judge_info SET status=#{status} WHERE id = #{id}
+    </update>
+
+    <!-- 随机得到一个 QuestionJudgeInfo-->
+    <select id="getRandom" parameterType="com.zpkj.exam.domain.query.QuestionJudgeInfoQuery" resultType="com.zpkj.exam.domain.QuestionJudgeInfo">
+        SELECT * FROM question_judge_info
+        WHERE question_type = 1
+        ORDER BY RAND() LIMIT 1
+    </select>
+</mapper>

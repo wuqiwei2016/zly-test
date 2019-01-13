@@ -1,0 +1,89 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.2//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zpkj.exam.dao.UserLoginInfoDao">
+
+    <!-- 查询 UserLoginInfo -->
+    <select id="find" parameterType="com.zpkj.exam.domain.query.UserLoginInfoQuery"
+            resultType="com.zpkj.exam.domain.UserLoginInfo">
+        SELECT * FROM user_login_info
+        <where>
+            <if test="account != null and account != ''">
+                AND account = #{account}
+            </if>
+            <if test="accountType != null">
+                AND account_type = #{accountType}
+            </if>
+            <if test="pwd != null and pwd != ''">
+                AND pwd = #{pwd}
+            </if>
+        </where>
+        ORDER BY create_time DESC
+    </select>
+
+    <!-- 通过id得到一个 UserLoginInfo-->
+    <select id="get" parameterType="string" resultType="com.zpkj.exam.domain.UserLoginInfo">
+        SELECT * FROM user_login_info WHERE id = #{id}
+    </select>
+
+    <!-- 新增 UserLoginInfo -->
+    <insert id="add" parameterType="com.zpkj.exam.domain.form.UserLoginInfoForm">
+        INSERT INTO user_login_info (
+            id, user_id, account, account_type, pwd, nick_name, user_desc, head_img, province_id, city_id, device_id, create_time, create_username, update_time, update_username, status,people_type,annex_url
+        )
+        VALUES(
+            #{id}, #{userId}, #{account}, #{accountType}, #{pwd}, #{nickName}, #{userDesc}, #{headImg}, #{provinceId}, #{cityId}, #{deviceId}, #{createTime}, #{createUsername}, #{updateTime}, #{updateUsername}, #{status},#{peopleType},#{annexUrl}
+        )
+    </insert>
+
+    <!-- 修改 UserLoginInfo -->
+    <update id="update" parameterType="com.zpkj.exam.domain.form.UserLoginInfoForm">
+        UPDATE user_login_info SET
+            user_id = #{userId},
+            account = #{account},
+            account_type = #{accountType},
+            pwd = #{pwd},
+            nick_name = #{nickName},
+            user_desc = #{userDesc},
+            head_img = #{headImg},
+            province_id = #{provinceId},
+            city_id = #{cityId},
+            device_id = #{deviceId},
+            update_time = #{updateTime},
+            update_username = #{updateUsername},
+            status = #{status},
+            people_type=#{peopleType},
+            annex_url=#{annexUrl}
+        WHERE id = #{id}
+    </update>
+
+    <!-- 删除一个 UserLoginInfo -->
+    <delete id="delete" parameterType="string">
+        DELETE FROM user_login_info WHERE id = #{id}
+    </delete>
+
+    <!-- 修改状态-->
+    <update id="changeStatus">
+        UPDATE user_login_info SET status=#{status} WHERE id = #{id}
+    </update>
+
+    <!-- 通过userId修改pwd-->
+    <update id="updatePwdByUserId">
+        UPDATE user_login_info SET pwd=#{pwd} WHERE user_id = #{userId}
+    </update>
+
+    <!-- 通过userId修改headImg-->
+    <update id="updateHeadImgByUserId">
+        UPDATE user_login_info SET head_img=#{headImg} WHERE user_id = #{userId}
+    </update>
+
+    <!-- 通过userId修改Account-->
+    <update id="updateAccountByUserId">
+        UPDATE user_login_info SET account=#{account} WHERE user_id = #{userId}
+    </update>
+
+    <!--通过UserId来修改用户信息-->
+    <update id="updateLoginByUserId">
+        UPDATE user_login_info SET head_img=#{headImg},people_type=#{peopleType},annex_url=#{annexUrl} WHERE user_id = #{userId}
+    </update>
+</mapper>

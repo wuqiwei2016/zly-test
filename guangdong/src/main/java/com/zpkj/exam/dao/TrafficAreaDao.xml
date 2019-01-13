@@ -1,0 +1,62 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.2//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zpkj.exam.dao.TrafficAreaDao">
+
+    <!-- 查询 TrafficArea -->
+    <select id="find" parameterType="com.zpkj.exam.domain.query.TrafficAreaQuery"
+            resultType="com.zpkj.exam.domain.TrafficArea">
+        SELECT * FROM traffic_area
+        <where>
+            <if test="areaParentno != null and areaParentno != ''">
+                AND AREA_PARENTNO = #{areaParentno}
+            </if>
+            <if test="areaParentno == null">
+                AND AREA_PARENTNO IS NULL
+            </if>
+        </where>
+        ORDER BY AREA_NO
+    </select>
+
+    <!-- 通过id得到一个 TrafficArea-->
+    <select id="get" parameterType="string" resultType="com.zpkj.exam.domain.TrafficArea">
+        SELECT * FROM traffic_area WHERE id = #{id}
+    </select>
+
+    <!-- 新增 TrafficArea -->
+    <insert id="add" parameterType="com.zpkj.exam.domain.form.TrafficAreaForm">
+        INSERT INTO traffic_area (
+            AREA_ID, AREA_NO, AREA_PARENTNO, AREA_NAME, AREA_SHORTNAME, AREA_FULLSPELL, AREA_SHORTSPELL, AREA_CODE, AREA_RANK, AREA_ZIPCODE
+        )
+        VALUES(
+            #{areaId}, #{areaNo}, #{areaParentno}, #{areaName}, #{areaShortname}, #{areaFullspell}, #{areaShortspell}, #{areaCode}, #{areaRank}, #{areaZipcode}
+        )
+    </insert>
+
+    <!-- 修改 TrafficArea -->
+    <update id="update" parameterType="com.zpkj.exam.domain.form.TrafficAreaForm">
+        UPDATE traffic_area SET
+            AREA_ID = #{areaId}, 
+            AREA_NO = #{areaNo}, 
+            AREA_PARENTNO = #{areaParentno}, 
+            AREA_NAME = #{areaName}, 
+            AREA_SHORTNAME = #{areaShortname}, 
+            AREA_FULLSPELL = #{areaFullspell}, 
+            AREA_SHORTSPELL = #{areaShortspell}, 
+            AREA_CODE = #{areaCode}, 
+            AREA_RANK = #{areaRank}, 
+            AREA_ZIPCODE = #{areaZipcode}
+        WHERE id = #{id}
+    </update>
+
+    <!-- 删除一个 TrafficArea -->
+    <delete id="delete" parameterType="string">
+        DELETE FROM traffic_area WHERE id = #{id}
+    </delete>
+
+    <!-- 修改状态-->
+    <update id="changeStatus">
+        UPDATE traffic_area SET status=#{status} WHERE id = #{id}
+    </update>
+
+</mapper>

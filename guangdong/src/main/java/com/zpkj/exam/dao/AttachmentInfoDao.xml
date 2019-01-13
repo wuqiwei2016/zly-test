@@ -1,0 +1,52 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.2//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zpkj.exam.dao.AttachmentInfoDao">
+    
+    <!-- 查询 AttachmentInfo -->
+    <select id="find" parameterType="com.zpkj.exam.domain.query.AttachmentInfoQuery" resultType="com.zpkj.exam.domain.AttachmentInfo">
+        SELECT * FROM attachment_info ORDER BY create_time DESC
+    </select>
+    
+    <!-- 通过id得到一个 AttachmentInfo-->
+    <select id="get" parameterType="string" resultType="com.zpkj.exam.domain.AttachmentInfo">
+        SELECT * FROM attachment_info WHERE id = #{id}
+    </select>
+    
+    <!-- 新增 AttachmentInfo -->
+    <insert id="add" parameterType="com.zpkj.exam.domain.form.AttachmentInfoForm">
+        INSERT INTO attachment_info (
+            id, user_id, attach_name, file_type, file_length, file_path, file_url, owner_type, owner_id, create_time, create_username, update_time, update_username, status
+        )
+        VALUES(
+            #{id}, #{userId}, #{attachName}, #{fileType}, #{fileLength}, #{filePath}, #{fileUrl}, #{ownerType}, #{ownerId}, #{createTime}, #{createUsername}, #{updateTime}, #{updateUsername}, #{status}
+        )
+    </insert>
+    
+    <!-- 修改 AttachmentInfo -->
+    <update id="update" parameterType="com.zpkj.exam.domain.form.AttachmentInfoForm">
+        UPDATE attachment_info SET
+            user_id = #{userId},
+            attach_name = #{attachName},
+            file_type = #{fileType},
+            file_length = #{fileLength},
+            file_path = #{filePath},
+            file_url = #{fileUrl},
+            owner_type = #{ownerType},
+            owner_id = #{ownerId},
+            update_time = #{updateTime},
+            update_username = #{updateUsername}
+        WHERE id = #{id}
+    </update>
+
+    <!-- 删除一个 AttachmentInfo -->
+    <delete id="delete" parameterType="string">
+        DELETE FROM attachment_info WHERE id = #{id}
+    </delete>
+
+    <!-- 修改状态-->
+    <update id="changeStatus">
+        UPDATE attachment_info SET status=#{status} WHERE id = #{id}
+    </update>
+
+</mapper>

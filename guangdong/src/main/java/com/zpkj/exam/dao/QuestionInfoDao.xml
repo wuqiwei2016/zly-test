@@ -1,0 +1,54 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.2//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zpkj.exam.dao.QuestionInfoDao">
+    
+    <!-- 查询 QuestionInfo -->
+    <select id="find" parameterType="com.zpkj.exam.domain.query.QuestionInfoQuery" resultType="com.zpkj.exam.domain.QuestionInfo">
+        SELECT * FROM question_info ORDER BY create_time DESC
+    </select>
+    
+    <!-- 通过id得到一个 QuestionInfo-->
+    <select id="get" parameterType="string" resultType="com.zpkj.exam.domain.QuestionInfo">
+        SELECT * FROM question_info WHERE id = #{id}
+    </select>
+    
+    <!-- 新增 QuestionInfo -->
+    <insert id="add" parameterType="com.zpkj.exam.domain.form.QuestionInfoForm">
+        INSERT INTO question_info (
+            id, title, question_type, type, answer_a, answer_b, answer_c, answer_d, right_answer, answer_description, difficulty, create_time, create_username, update_time, update_username, status
+        )
+        VALUES(
+            #{id}, #{title}, #{questionType}, #{type}, #{answerA}, #{answerB}, #{answerC}, #{answerD}, #{rightAnswer}, #{answerDescription}, #{difficulty}, #{createTime}, #{createUsername}, #{updateTime}, #{updateUsername}, #{status}
+        )
+    </insert>
+    
+    <!-- 修改 QuestionInfo -->
+    <update id="update" parameterType="com.zpkj.exam.domain.form.QuestionInfoForm">
+        UPDATE question_info SET
+            title = #{title},
+            question_type = #{questionType},
+            type = #{type},
+            answer_a = #{answerA},
+            answer_b = #{answerB},
+            answer_c = #{answerC},
+            answer_d = #{answerD},
+            right_answer = #{rightAnswer},
+            answer_description = #{answerDescription},
+            difficulty = #{difficulty},
+            update_time = #{updateTime},
+            update_username = #{updateUsername}
+        WHERE id = #{id}
+    </update>
+
+    <!-- 删除一个 QuestionInfo -->
+    <delete id="delete" parameterType="string">
+        DELETE FROM question_info WHERE id = #{id}
+    </delete>
+
+    <!-- 修改状态-->
+    <update id="changeStatus">
+        UPDATE question_info SET status=#{status} WHERE id = #{id}
+    </update>
+
+</mapper>

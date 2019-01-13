@@ -1,0 +1,219 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.2//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zpkj.exam.dao.ExamInfoDao">
+
+    <!-- 查询 ExamInfo -->
+    <select id="find" parameterType="com.zpkj.exam.domain.query.ExamInfoQuery"
+            resultType="com.zpkj.exam.domain.ExamInfo">
+        SELECT t.*, ep.period, ep.title, ep.start_time AS exam_start_time, ep.end_time AS exam_end_time,
+        ep.province, ep.city, ep.area, ep.address, u.real_name, u.id_card, u.phone, u.work_unit,
+        u.create_time AS user_create_time, ea.apply_time,u.people_type1,u.people_type2,u.people_type3,ei.annex_url
+        FROM exam_info t
+        LEFT JOIN exam_period_info ep ON ep.id = t.exam_period_id
+        LEFT JOIN user_base_info u ON u.id = t.user_id
+        LEFT JOIN exam_apply_info ea ON ea.exam_id = t.id
+        LEFT JOIN user_login_info ei ON ei.user_id = t.user_id
+        <where>
+            <if test="id != null">
+                AND t.exam_period_id = #{id}
+            </if>
+            <if test="status != null">
+                AND t.status = #{status}
+            </if>
+            <if test="userId != null and userId != ''">
+                AND t.user_id = #{userId}
+            </if>
+            <if test="examPeriodId != null and examPeriodId != ''">
+                AND t.exam_period_id = #{examPeriodId}
+            </if>
+            <if test="result != null and result != 3 and result != 4 and result != 5 and result != 6">
+                AND t.result = #{result}
+            </if>
+            <if test="result != null and result == 3">
+                AND t.result IS NULL AND ep.end_time &lt; #{createTime}
+            </if>
+            <if test="result != null and result == 4">
+                AND t.result = 1 AND ep.end_time &lt; #{createTime}
+            </if>
+            <if test="result != null and result == 5">
+                AND t.result = 2 AND ep.end_time &lt; #{createTime}
+            </if>
+            <if test="result != null and result == 6">
+                AND ep.end_time &lt; #{createTime}
+            </if>
+            <if test="isInform != null">
+                AND t.is_inform = #{isInform}
+            </if>
+            <if test="search != null and search != ''">
+                AND (u.real_name LIKE CONCAT('%',#{search},'%')
+                OR u.id_card LIKE CONCAT('%',#{search},'%')
+                OR u.phone LIKE CONCAT('%',#{search},'%')
+                OR u.work_unit LIKE CONCAT('%',#{search},'%'))
+            </if>
+        </where>
+        ORDER BY t.create_time DESC
+    </select>
+
+    <!-- 查询 ExamInfo -->
+    <select id="findDistinctByPage" parameterType="com.zpkj.exam.domain.query.ExamInfoQuery"
+            resultType="com.zpkj.exam.domain.ExamInfo">
+        SELECT t.exam_period_id,t.user_id,u.real_name, u.id_card, u.phone, u.work_unit,
+        u.people_type1,u.people_type2
+        FROM exam_info t
+        LEFT JOIN exam_period_info ep ON ep.id = t.exam_period_id
+        LEFT JOIN user_base_info u ON u.id = t.user_id
+        <where>
+            <if test="examPeriodId != null and examPeriodId != ''">
+                AND t.exam_period_id = #{examPeriodId}
+            </if>
+            <if test="search != null and search != ''">
+                AND (u.real_name LIKE CONCAT('%',#{search},'%')
+                OR u.id_card LIKE CONCAT('%',#{search},'%')
+                OR u.phone LIKE CONCAT('%',#{search},'%')
+                OR u.work_unit LIKE CONCAT('%',#{search},'%'))
+            </if>
+        </where>
+        GROUP BY t.exam_period_id,t.user_id,u.real_name, u.id_card, u.phone, u.work_unit,
+        u.people_type1,u.people_type2,t.create_time
+        ORDER BY t.create_time DESC
+    </select>
+
+    <!-- 查询 ExamInfo -->
+    <select id="findTwo" parameterType="com.zpkj.exam.domain.query.ExamInfoQuery"
+            resultType="com.zpkj.exam.domain.ExamInfo">
+        SELECT t.*, ep.period, ep.title, ep.start_time AS exam_start_time, ep.end_time AS exam_end_time,
+        ep.province, ep.city, ep.area, ep.address, u.real_name, u.id_card, u.phone, u.work_unit,
+        u.create_time AS user_create_time, ea.apply_time,ei.people_type,ei.annex_url,u.people_type1,u.people_type2,u.people_type3
+        FROM exam_info t
+        LEFT JOIN exam_period_info ep ON ep.id = t.exam_period_id
+        LEFT JOIN user_base_info u ON u.id = t.user_id
+        LEFT JOIN exam_apply_info ea ON ea.exam_id = t.id
+        LEFT JOIN user_login_info ei ON ei.user_id = t.user_id
+        <where>
+            <if test="peopleType !='' and peopleType !=null">
+                AND ei.people_type = #{peopleType}
+            </if>
+            <if test="id != null">
+                AND t.exam_period_id = #{id}
+            </if>
+            <if test="status != null">
+                AND t.status = #{status}
+            </if>
+            <if test="userId != null and userId != ''">
+                AND t.user_id = #{userId}
+            </if>
+            <if test="examPeriodId != null and examPeriodId != ''">
+                AND t.exam_period_id = #{examPeriodId}
+            </if>
+            <if test="result != null and result != 3 and result != 4 and result != 5 and result != 6">
+                AND t.result = #{result}
+            </if>
+            <if test="result != null and result == 3">
+                AND t.result IS NULL AND ep.end_time &lt; #{createTime}
+            </if>
+            <if test="result != null and result == 4">
+                AND t.result = 1 AND ep.end_time &lt; #{createTime}
+            </if>
+            <if test="result != null and result == 5">
+                AND t.result = 2 AND ep.end_time &lt; #{createTime}
+            </if>
+            <if test="result != null and result == 6">
+                AND ep.end_time &lt; #{createTime}
+            </if>
+            <if test="isInform != null">
+                AND t.is_inform = #{isInform}
+            </if>
+            <if test="search != null and search != ''">
+                AND (u.real_name LIKE CONCAT('%',#{search},'%')
+                OR u.id_card LIKE CONCAT('%',#{search},'%')
+                OR u.phone LIKE CONCAT('%',#{search},'%')
+                OR u.work_unit LIKE CONCAT('%',#{search},'%'))
+            </if>
+        </where>
+        ORDER BY t.create_time DESC
+    </select>
+    <!-- 通过id得到一个 ExamInfo-->
+    <select id="get" parameterType="string" resultType="com.zpkj.exam.domain.ExamInfo">
+        SELECT t.*, ep.period, ep.title, ep.start_time AS exam_start_time, ep.end_time AS exam_end_time,
+        ep.province, ep.city, ep.area, ep.address, u.real_name, u.id_card, u.phone, u.work_unit,
+        u.create_time AS user_create_time, ea.apply_time
+        FROM exam_info t
+        LEFT JOIN exam_period_info ep ON ep.id = t.exam_period_id
+        LEFT JOIN user_base_info u ON u.id = t.user_id
+        LEFT JOIN exam_apply_info ea ON ea.exam_id = t.id
+        WHERE t.id = #{id}
+    </select>
+
+    <!-- 新增 ExamInfo -->
+    <insert id="add" parameterType="com.zpkj.exam.domain.form.ExamInfoForm">
+        INSERT INTO exam_info (
+            id, user_id, exam_period_id, start_time, end_time, total_score, result, picture1, picture2, picture3, is_inform, create_time, create_username, update_time, update_username, status
+        )
+        VALUES(
+            #{id}, #{userId}, #{examPeriodId}, #{startTime}, #{endTime}, #{totalScore}, #{result}, #{picture1}, #{picture2}, #{picture3}, #{isInform}, #{createTime}, #{createUsername}, #{updateTime}, #{updateUsername}, #{status}
+        )
+    </insert>
+
+    <!-- 修改 ExamInfo -->
+    <update id="update" parameterType="com.zpkj.exam.domain.form.ExamInfoForm">
+        UPDATE exam_info SET
+        <if test="startTime != null">
+            start_time = #{startTime},
+        </if>
+        <if test="endTime != null">
+            end_time = #{endTime},
+        </if>
+        <if test="totalScore != null">
+            total_score = #{totalScore},
+        </if>
+        <if test="result != null">
+            result = #{result},
+        </if>
+        <if test="picture1 != null and picture1 != ''">
+            picture1 = #{picture1},
+        </if>
+        <if test="picture2 != null and picture2 != ''">
+            picture2 = #{picture2},
+        </if>
+        <if test="picture3 != null and picture3 != ''">
+            picture3 = #{picture3},
+        </if>
+        <if test="status != null">
+            status = #{status},
+        </if>
+        update_time = #{updateTime},
+        update_username = #{updateUsername}
+        WHERE id = #{id}
+    </update>
+
+    <!-- 删除一个 ExamInfo -->
+    <delete id="delete" parameterType="string">
+        DELETE FROM exam_info WHERE id = #{id}
+    </delete>
+
+    <!-- 删除 ExamInfo -->
+    <delete id="deleteByUserId" parameterType="string">
+        DELETE FROM exam_info WHERE exam_period_id = #{examPeriodId} AND user_id = #{userId}
+    </delete>
+
+    <!-- 修改状态-->
+    <update id="changeStatus">
+        UPDATE exam_info SET status=#{status} WHERE id = #{id}
+    </update>
+
+    <!-- 修改通知状态-->
+    <update id="changeIsInform">
+        UPDATE exam_info SET is_inform=#{isInform} WHERE id = #{id}
+    </update>
+<update id="upExamStatusByUidOrSt">
+        UPDATE exam_info SET end_time=#{end_time} WHERE user_id=#{user_id} AND end_time=#{end_time}
+</update>
+    <select id="findByUserId" resultType="com.zpkj.exam.domain.ExamInfo">
+        SELECT * FROM exam_info WHERE user_id=#{userId} AND end_time IS NULL
+    </select>
+    <!--查询当前考试其次下是否有已经通知-->
+    <select id="findExamListByexamPeriodId" resultType="int">
+        SELECT COUNT(*) FROM exam_info WHERE exam_period_id=#{id} AND is_inform=1
+    </select>
+</mapper>
